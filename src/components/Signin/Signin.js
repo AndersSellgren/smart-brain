@@ -1,4 +1,5 @@
 import React from 'react';
+import './Signin.css';
 
 class Signin extends React.Component {
   constructor(props) {
@@ -11,6 +12,11 @@ class Signin extends React.Component {
 
   onEmailChange = (event) => {
     this.setState({signInEmail: event.target.value})
+  }
+
+  saveAuthTokenInSessions = (token) => {
+    window.sessionStorage.setItem('token', token)
+    // window.localStorage.setItem('token', token)
   }
 
   onPasswordChange = (event) => {
@@ -26,13 +32,15 @@ class Signin extends React.Component {
         password: this.state.signInPassword
       })
     })
-      .then(response => response.json())
-      .then(user => {
-        if (user.id) {
-          this.props.loadUser(user)
+    .then(response => response.json())
+      .then(data => {
+        if (data && data.success === "true") {
+          this.saveAuthTokenInSessions(data.token)
+          this.props.loadUser(data.user)
           this.props.onRouteChange('home');
         }
-      })
+    })
+    .catch(console.log)
   }
 
   render() {
